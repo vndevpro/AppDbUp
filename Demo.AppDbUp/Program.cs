@@ -1,4 +1,5 @@
 ﻿using DbUp;
+using DbUp.Engine;
 using Rabbit.Foundation.Data;
 using System;
 using System.Configuration;
@@ -14,14 +15,7 @@ namespace Demo.AppDbUp
 
             TryCreateDatabase(connectionString);
 
-            var upgrader =
-                DeployChanges.To
-                    .SqlDatabase(connectionString)
-                    .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
-                    .LogToConsole()
-                    .Build();
-
-            var result = upgrader.PerformUpgrade();
+            var result = PerformUpgrade(connectionString);
 
             if (!result.Successful)
             {
@@ -29,10 +23,24 @@ namespace Demo.AppDbUp
                 Console.WriteLine(result.Error);
                 Console.ResetColor();
             }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Success!");
+                Console.ResetColor();
+            }
+        }
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Success!");
-            Console.ResetColor();
+        static DatabaseUpgradeResult PerformUpgrade(string connectionString)
+        {
+            var upgrader =
+                DeployChanges.To
+                    .SqlDatabase(connectionString)
+                    .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
+                    .LogToConsole()
+                    .Build();
+
+            return upgrader.PerformUpgrade();
         }
 
         static void TryCreateDatabase(string connectionString)
