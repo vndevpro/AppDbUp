@@ -1,0 +1,3 @@
+﻿ALTER TABLE [dbo].[Customer]
+ADD [Birthday] DATETIME DEFAULT NULL;
+GO
